@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050505">
+  <title>ANANYA — The Final Mission</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@400;500;600&display=swap');
+
+    :root {
+      --bg: #050505;
+      --card: #101010;
+      --card2: #0b0b0b;
+      --text: #f4f0eb;
+      --muted: #a39d97;
+      --gold: #d7b98b;
+      --red: #b84b4b;
+      --border: rgba(215,185,139,.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(120,80,40,.10), transparent 35%),
+        #050505;
+      color: var(--text);
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    #app {
+      width: 100%;
+      max-width: 720px;
+      min-height: 100vh;
+      margin: auto;
+      padding: 22px 17px 40px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---------- SCREENS ---------- */
+    .screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      justify-content: center;
+      animation: fadeIn .7s ease;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .center {
+      align-items: center;
+      text-align: center;
+    }
+
+    /* ---------- TEXT ---------- */
+    .kicker {
+      color: var(--gold);
+      font-size: 9px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    h1 {
+      font-size: clamp(31px, 8vw, 58px);
+      letter-spacing: 3px;
+      margin: 0 0 18px;
+    }
+
+    h2 {
+      font-size: clamp(25px, 6vw, 40px);
+      margin: 0 0 15px;
+    }
+
+    h3 {
+      font-size: 20px;
+      margin: 0 0 12px;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.85;
+    }
+
+    .subtitle {
+      max-width: 440px;
+      text-align: center;
+      margin: 0 auto 30px;
+    }
+
+    .small {
+      font-size: 10px;
+      letter-spacing: .5px;
+    }
+
+    /* ---------- SYMBOL ---------- */
+    .symbol {
+      font-size: 58px;
+      color: var(--gold);
+      margin-bottom: 15px;
+      animation: pulse 3s infinite;
+    }
+
+    /* ---------- CARD ---------- */
+    .card {
+      width: 100%;
+      padding: clamp(23px, 6vw, 42px);
+      background:
+        linear-gradient(145deg, rgba(20,20,20,.98), rgba(7,7,7,.98));
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow:
+        0 20px 70px rgba(0,0,0,.55),
+        inset 0 0 40px rgba(255,255,255,.015);
+    }
+
+    .card + .footer {
+      margin-top: 28px;
+    }
+
+    /* ---------- BUTTONS ---------- */
+    .btn {
+      border: 1px solid var(--gold);
+      background: var(--gold);
+      color: #111;
+      padding: 15px 25px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      transition: .25s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
+    .btn:active {
+      transform: scale(.97);
+    }
+
+    .btn:disabled {
+      opacity: .3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn.secondary {
+      background: transparent;
+      color: var(--gold);
+    }
+
+    /* ---------- TOP BAR ---------- */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      color: var(--muted);
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    #heartCount {
+      color: var(--red);
+      letter-spacing: 3px;
+    }
+
+    /* ---------- PROGRESS ---------- */
+    .progress-wrap {
+      height: 2px;
+      width: 100%;
+      background: #202020;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 34px;
+    }
+
+    .progress {
+      width: 0%;
+      height: 100%;
+      background: var(--gold);
+      transition: width .6s ease;
+    }
+
+    /* ---------- LEVEL ---------- */
+    .level {
+      color: var(--gold);
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .question {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(20px, 5vw, 29px);
+      line-height: 1.6;
+      margin-bottom: 22px;
+    }
+
+    .hint {
+      border-left: 2px solid var(--gold);
+      padding: 9px 13px;
+      margin: 20px 0 23px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.8;
+      background: rgba(215,185,139,.025);
+    }
+
+    /* ---------- INPUT ---------- */
+    input {
+      width: 100%;
+      padding: 15px;
+      background: #050505;
+      border: 1px solid #38332d;
+      border-radius: 4px;
+      color: white;
+      font-size: 15px;
+      outline: none;
+      margin-bottom: 10px;
+      transition: .2s;
+    }
+
+    input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(215,185,139,.05);
+    }
+
+    /* ---------- FEEDBACK ---------- */
+    .feedback {
+      min-height: 25px;
+      margin: 10px 0 17px;
+      color: var(--gold);
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    .error {
+      color: var(--red) !important;
+    }
+
+    /* ---------- OPTIONS ---------- */
+    .options {
+      display: grid;
+      gap: 10px;
+      margin: 22px 0;
+    }
+
+    .option {
+      width: 100%;
+      padding: 15px;
+      background: transparent;
+      border: 1px solid #353535;
+      border-radius: 4px;
+      color: var(--text);
+      text-align: left;
+      font-size: 13px;
+      transition: .25s ease;
+    }
+
+    .option:hover {
+      border-color: var(--gold);
+      background: rgba(215,185,139,.04);
+    }
+
+    .option.selected {
+      border-color: var(--gold);
+      background: rgba(215,185,139,.10);
+      color: var(--gold);
+    }
+
+    /* ---------- REWARD ---------- */
+    .reward {
+      margin-top: 25px;
+      padding: 27px 18px;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      text-align: center;
+      background: rgba(255,255,255,.01);
+    }
+
+    .lock {
+      font-size: 38px;
+      margin-bottom: 12px;
+    }
+
+    /* ---------- LOVE LETTER ---------- */
+    .letter {
+      margin-top: 25px;
+      padding: 25px 20px;
+      text-align: left;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: linear-gradient(145deg, #11100e, #080808);
+      animation: letterReveal 1.2s ease;
+    }
+
+    .letter-line {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 20px 0;
+    }
+
+    .letter p {
+      color: #c7c0b9;
+    }
+
+    .letter .signature {
+      color: var(--text);
+      font-family: 'Cinzel', serif;
+    }
+
+    /* ---------- FAKE END ---------- */
+    .danger {
+      color: var(--red) !important;
+    }
+
+    .warning-box {
+      border: 1px solid rgba(184,75,75,.3);
+      background: rgba(184,75,75,.03);
+      border-radius: 7px;
+      padding: 25px 18px;
+      margin: 22px 0;
+    }
+
+    .fake-loader {
+      width: 100%;
+      height: 3px;
+      background: #252525;
+      overflow: hidden;
+      margin: 18px 0;
+    }
+
+    .fake-loader div {
+      height: 100%;
+      width: 100%;
+      background: var(--red);
+      animation: loader 2s linear;
+    }
+
+    /* ---------- SURPRISE BOX ---------- */
+    .surprise-box {
+      margin-top: 25px;
+      padding: 30px 20px;
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      background: linear-gradient(145deg, rgba(215,185,139,.08), rgba(0,0,0,.5));
+      text-align: center;
+      animation: pulseGlow 2s infinite;
+    }
+
+    .surprise-box h3 {
+      color: var(--gold);
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    .surprise-box p {
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .surprise-link {
+      display: inline-block;
+      padding: 18px 35px;
+      background: var(--gold);
+      color: #111;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: .3s ease;
+      animation: bounce 1.5s infinite;
+    }
+
+    .surprise-link:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(215,185,139,.5);
+    }
+
+    /* ---------- FOOTER ---------- */
+    .footer {
+      text-align: center;
+      color: #444;
+      font-size: 8px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 28px;
+    }
+
+    /* ---------- HIDDEN ---------- */
+    .hidden {
+      display: none !important;
+    }
+
+    /* ---------- ANIMATIONS ---------- */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: .65; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.07); }
+    }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    @keyframes loader {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+
+    @keyframes letterReveal {
+      0% { opacity: 0; transform: translateY(20px) scale(.97); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes pulseGlow {
+      0%,100% { box-shadow: 0 0 15px rgba(215,185,139,.2); }
+      50% { box-shadow: 0 0 40px rgba(215,185,139,.5); }
+    }
+
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    /* ---------- MOBILE ---------- */
+    @media (max-width: 420px) {
+      #app { padding: 19px 14px 30px; }
+      .card { padding: 23px 18px; }
+      .btn { width: 100%; }
+      .symbol { font-size: 50px; }
+      .letter { padding: 22px 17px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- INTRO -->
+    <section id="intro" class="screen active center">
+      <div class="kicker">Classified • Case 2712</div>
+      <div class="symbol">✦</div>
+      <h1>THE FINAL<br>MISSION</h1>
+      <p class="subtitle">A little secret has been locked away.<br>Only one person can unlock it.</p>
+      <div class="card">
+        <p style="color:var(--gold); font-size:9px; letter-spacing:3px; text-transform:uppercase;">Authorized Agent</p>
+        <h2>ANANYA</h2>
+        <p>Your mission contains memories, clues, a few traps... and one very special surprise.</p>
+        <p class="small">Estimated mission time: 2–4 minutes</p>
+      </div>
+      <br>
+      <button class="btn" onclick="startGame()">Accept Mission →</button>
+      <div class="footer">A PRIVATE TRANSMISSION FROM SOMEONE SPECIAL</div>
+    </section>
+
+    <!-- GAME -->
+    <section id="game" class="screen">
+      <div class="topbar">
+        <span id="caseLabel">CASE 01 / 03</span>
+        <span id="heartCount">♡ ♡ ♡</span>
+      </div>
+      <div class="progress-wrap">
+        <div id="progress" class="progress"></div>
+      </div>
+      <div class="card">
+        <!-- LEVEL 1 -->
+        <div id="level1">
+          <div class="level">Level 01 • Memory Protocol</div>
+          <div class="question">When did our story officially begin?</div>
+          <div class="hint">HINT: The month was December. Enter the date as DDMM.</div>
+          <input id="answer1" type="text" inputmode="numeric" maxlength="4" placeholder="Enter 4-digit code" autocomplete="off">
+          <div id="feedback1" class="feedback"></div>
+          <button class="btn" onclick="checkLevel1()">Verify Code</button>
+        </div>
+        <!-- LEVEL 2 -->
+        <div id="level2" class="hidden">
+          <div class="level">Level 02 • The Missing Word</div>
+          <div class="question">Complete the sentence.</div>
+          <p style="color:var(--text); font-family:'Cinzel',serif; font-size:18px;">"You are my favourite ______."</p>
+          <div class="hint">HINT: Think of the little word I would use when talking about you.</div>
+          <input id="answer2" type="text" placeholder="Enter your answer" autocomplete="off">
+          <div id="feedback2" class="feedback"></div>
+          <button class="btn" onclick="checkLevel2()">Unlock Memory</button>
+        </div>
+        <!-- LEVEL 3 -->
+        <div id="level3" class="hidden">
+          <div class="level">Level 03 • Final Prediction</div>
+          <div class="question">What do you think is waiting behind the final lock?</div>
+          <div class="options">
+            <button class="option" onclick="selectOption(this, 'A')">A. A boring lecture 😭</button>
+            <button class="option" onclick="selectOption(this, 'B')">B. A little surprise from me ❤️</button>
+            <button class="option" onclick="selectOption(this, 'C')">C. A maths test 💀</button>
+          </div>
+          <div id="feedback3" class="feedback"></div>
+          <button id="finalCheck" class="btn" onclick="checkLevel3()" disabled>Open Final Lock</button>
+        </div>
+      </div>
+      <div class="footer">PROGRESS • MEMORY • LOVE</div>
+    </section>
+
+    <!-- FAKE ENDING -->
+    <section id="fakeEnding" class="screen center">
+      <div class="kicker danger">System Notification</div>
+      <div class="symbol" style="color:var(--red);">⚠</div>
+      <h2>ACCESS DENIED.</h2>
+      <p class="subtitle">The final file could not be recovered. Something appears to have gone wrong.</p>
+      <div class="card">
+        <p style="color:var(--red); font-size:9px; letter-spacing:3px; text-transform:uppercase;">Mission Status</p>
+        <h3>FAILED...?</h3>
+        <div class="warning-box">
+          <p style="margin:0;">FINAL FILE STATUS: <strong style="color:var(--red);">LOCKED</strong></p>
+          <div class="fake-loader"><div></div></div>
+          <p class="small">Emergency recovery protocol available.</p>
+        </div>
+        <p>Please remain calm, Agent Ananya. There may still be one way inside.</p>
+      </div>
+      <br>
+      <button class="btn" onclick="revealEnding()">Emergency Override</button>
+      <div class="footer">SYSTEM ERROR • OR IS IT?</div>
+    </section>
+
+    <!-- FINAL REVEAL -->
+    <section id="reveal" class="screen center">
+      <div class="kicker">Mission Complete</div>
+      <div class="symbol">♡</div>
+      <h2>JUST KIDDING,<br>MY LOVE.</h2>
+      <p class="subtitle">You really thought I would let you finish a whole mission without a surprise? 😭</p>
+      <div class="card">
+        <p style="color:var(--gold); font-size:9px; letter-spacing:3px; text-transform:uppercase;">Message From The Creator</p>
+        <h3>To My Ananya</h3>
+        <p>Okayyy first of all... congratulations, Agent Ananya. You actually made it through my stupid little mission 😭</p>
+        <p>But honestly, I didn't make this because I had some huge surprise. I made it because I wanted to give you something that was just... <strong style="color:var(--text);">ours.</strong></p>
+        <p>I know these past few weeks I've been giving you very less time, and I know that isn't always easy. So thank you for being so patient and understanding with me.</p>
+        <p>Thank you for still being loving with me, for understanding when I'm busy, and for being there even when I can't give you as much of myself as I want to.</p>
+        <p>And please never forget how proud I am of you. I know you're working so hard, and I genuinely believe in you. Even on the days when you don't believe in yourself.</p>
+        <div class="letter-line"></div>
+        <p>Take care of yourself, okay? Eat properly, drink enough water, rest when you're tired, and don't be too hard on yourself.</p>
+        <p>And whenever things get difficult, remember there's someone somewhere who is always silently rooting for you.</p>
+        <p style="color:var(--text); font-family:'Cinzel',serif; font-size:18px;">I loveee youuu sooooo muchhh. ❤️</p>
+        <p class="signature">Forever your idiot,<br>Your favourite person <span style="color:var(--gold);">(hopefully 🤭)</span></p>
+      </div>
+
+      <!-- SURPRISE LINK BOX -->
+      <div class="surprise-box">
+        <div class="lock" style="font-size:50px;">🎁</div>
+        <h3>Your Surprise Awaits</h3>
+        <p style="font-size:15px; color:var(--text);">
+          Click the button below to open your special surprise, Ananya. ❤️
+        </p>
+        <a 
+          href="https://account.croppicture.xyz/preview/nsa/arpa_redeem_gift.mp4?r=_gt41v" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="surprise-link"
+        >
+          ✨ Click Here To Open Your Surprise ✨
+        </a>
+      </div>
+
+      <!-- SECOND SECRET BUTTON -->
+      <div class="reward" style="margin-top:25px;">
+        <div class="lock">✦</div>
+        <h3>One Last Thing</h3>
+        <p>You thought the mission was over? Nope.</p>
+        <button id="secretButton" class="btn" onclick="openFinalSecret()">Open One Last Secret</button>
+        <div id="secretMessage" class="letter hidden">
+          <p style="color:var(--gold); font-size:9px; letter-spacing:3px; text-transform:uppercase;">Classified Final Message</p>
+          <p style="color:var(--text); font-family:'Cinzel',serif; font-size:18px;">If I had to choose one person to annoy for the rest of my life...</p>
+          <p>Well obviously it's you. No refunds. No exchanges. You're stuck with me now. 😭</p>
+          <p>So congratulations... you are officially my favourite human being.</p>
+          <p style="color:var(--gold); font-family:'Cinzel',serif;">Mission completed, my love. ♡</p>
+        </div>
+      </div>
+      <div class="footer">END OF TRANSMISSION • MADE WITH LOVE</div>
+    </section>
+  </div>
+
+  <script>
+    // ========== CONFIG ==========
+    const CORRECT_DATE = "2712"; // 27 December
+    const CORRECT_NICKNAME = "love"; // change if you want
+
+    // ========== STATE ==========
+    let currentLevel = 1;
+    let hearts = 3;
+    let selectedOption = null;
+
+    // ========== SCREEN MANAGEMENT ==========
+    function showScreen(id) {
+      document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+      });
+      document.getElementById(id).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // ========== PROGRESS ==========
+    function updateProgress() {
+      let percentage = 0;
+      if (currentLevel === 1) percentage = 0;
+      if (currentLevel === 2) percentage = 33;
+      if (currentLevel === 3) percentage = 66;
+      if (currentLevel >= 4) percentage = 100;
+      document.getElementById("progress").style.width = percentage + "%";
+      document.getElementById("caseLabel").textContent = "CASE " + String(Math.min(currentLevel, 3)).padStart(2, "0") + " / 03";
+    }
+
+    // ========== HEARTS ==========
+    function updateHearts() {
+      let heartsText = "";
+      for (let i = 0; i < hearts; i++) heartsText += "♡ ";
+      if (hearts === 0) heartsText = "NO HEARTS";
+      document.getElementById("heartCount").textContent = heartsText.trim();
+    }
+
+    function loseHeart() {
+      if (hearts > 0) hearts--;
+      updateHearts();
+    }
+
+    // ========== FEEDBACK ==========
+    function setFeedback(id, text, error = false) {
+      const element = document.getElementById(id);
+      element.textContent = text;
+      element.classList.toggle("error", error);
+    }
+
+    // ========== SHAKE ==========
+    function shake(id) {
+      const element = document.getElementById(id);
+      element.classList.remove("shake");
+      void element.offsetWidth;
+      element.classList.add("shake");
+    }
+
+    // ========== START GAME ==========
+    function startGame() {
+      currentLevel = 1;
+      hearts = 3;
+      selectedOption = null;
+      updateHearts();
+      updateProgress();
+      showScreen("game");
+
+      document.getElementById("level1").classList.remove("hidden");
+      document.getElementById("level2").classList.add("hidden");
+      document.getElementById("level3").classList.add("hidden");
+      document.getElementById("feedback1").textContent = "";
+      document.getElementById("feedback2").textContent = "";
+      document.getElementById("feedback3").textContent = "";
+      document.getElementById("answer1").value = "";
+      document.getElementById("answer2").value = "";
+      document.getElementById("finalCheck").disabled = true;
+      document.querySelectorAll(".option").forEach(opt => opt.classList.remove("selected"));
+      document.querySelector("#level1 .btn").disabled = false;
+      document.querySelector("#level2 .btn").disabled = false;
+      setTimeout(() => document.getElementById("answer1").focus(), 100);
+    }
+
+    // ========== LEVEL 1 ==========
+    function checkLevel1() {
+      const input = document.getElementById("answer1").value.trim();
+      if (!input) {
+        setFeedback("feedback1", "Please enter the date code.", true);
+        return;
+      }
+      if (input === CORRECT_DATE) {
+        setFeedback("feedback1", "✓ Correct! Access granted...", false);
+        currentLevel = 2;
+        updateProgress();
+        setTimeout(() => {
+          document.getElementById("level1").classList.add("hidden");
+          document.getElementById("level2").classList.remove("hidden");
+          document.getElementById("answer2").focus();
+          setFeedback("feedback1", "");
+        }, 500);
+      } else {
+        loseHeart();
+        setFeedback("feedback1", "✗ Wrong code. Try again. (-1 heart)", true);
+        shake("answer1");
+        if (hearts === 0) {
+          setFeedback("feedback1", "You're out of hearts! Refresh to try again.", true);
+          document.querySelector("#level1 .btn").disabled = true;
+        }
+      }
+    }
+
+    // ========== LEVEL 2 ==========
+    function checkLevel2() {
+      const input = document.getElementById("answer2").value.trim().toLowerCase();
+      if (!input) {
+        setFeedback("feedback2", "Please enter your answer.", true);
+        return;
+      }
+      if (input === CORRECT_NICKNAME.toLowerCase()) {
+        setFeedback("feedback2", "✓ Memory unlocked!", false);
+        currentLevel = 3;
+        updateProgress();
+        setTimeout(() => {
+          document.getElementById("level2").classList.add("hidden");
+          document.getElementById("level3").classList.remove("hidden");
+          setFeedback("feedback2", "");
+        }, 500);
+      } else {
+        loseHeart();
+        setFeedback("feedback2", "✗ That doesn't match. Try again. (-1 heart)", true);
+        shake("answer2");
+        if (hearts === 0) {
+          setFeedback("feedback2", "You're out of hearts! Refresh to try again.", true);
+          document.querySelector("#level2 .btn").disabled = true;
+        }
+      }
+    }
+
+    // ========== LEVEL 3 ==========
+    function selectOption(button, option) {
+      document.querySelectorAll(".option").forEach(opt => opt.classList.remove("selected"));
+      button.classList.add("selected");
+      selectedOption = option;
+      document.getElementById("finalCheck").disabled = false;
+    }
+
+    function checkLevel3() {
+      if (!selectedOption) return;
+      if (selectedOption === "B") {
+        setFeedback("feedback3", "✓ Correct! Opening final lock...", false);
+        currentLevel = 4;
+        updateProgress();
+        setTimeout(() => {
+          showScreen("fakeEnding");
+        }, 800);
+      } else {
+        setFeedback("feedback3", "✗ Hmm, that doesn't feel right... Try again.", true);
+        loseHeart();
+        if (hearts === 0) {
+          setFeedback("feedback3", "You're out of hearts! Refresh to try again.", true);
+          document.getElementById("finalCheck").disabled = true;
+        }
+      }
+    }
+
+    // ========== REVEAL ENDING ==========
+    function revealEnding() {
+      showScreen("reveal");
+    }
+
+    // ========== OPEN FINAL SECRET ==========
+    function openFinalSecret() {
+      document.getElementById("secretMessage").classList.remove("hidden");
+      document.getElementById("secretButton").style.display = "none";
+    }
+
+    // ========== INIT ==========
+    updateHearts();
+    updateProgress();
+
+    // Add shake class styles dynamically
+    const style = document.createElement('style');
+    style.textContent = `
+      .shake {
+        animation: shake 0.3s ease-in-out;
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
